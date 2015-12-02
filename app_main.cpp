@@ -1,4 +1,4 @@
-//ayyylmao
+//Justin Nguyen
 # include <iostream>
 //# include <gsim/gs.h>
 # include "ogl_tools.h"
