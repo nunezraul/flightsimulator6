@@ -1,4 +1,4 @@
-
+//Copyright 2015. Patent pending.
 # include <iostream>
 # include <gsim/gs.h>
 # include "app_window.h"
