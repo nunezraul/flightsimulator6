@@ -30,6 +30,7 @@ void AppWindow::initPrograms ()
    _floor.init( "../texture/_image.bmp", textures); _floor.build( 20.0f, -5.0f, 20.0f, textures);
    _side.init(); _side.build(25.0f, 20.0f, 20.0f, 25, textures);
    _sun.init(); 
+   _sun.build(1.0f, 1, 1, 0);
    _building.load("../models/The_City.obj"); //_building.scale(.7f);
    _city.init(); _city.build(_building);
 
@@ -232,7 +233,7 @@ void AppWindow::glutDisplay ()
 
    // Define our scene transformation:
    GsMat rx, ry, stransf, barrelroll, leftright, transf, updown, rightwing, leftwing, offsety, centerrwing, centerlwing, rl, rr, backR, backL, centerbackl, centerbackr, br, bl;
-   GsMat rfrot, lfrot, rbrot, lbrot, rollyawpitch, ShadowT;
+   GsMat rfrot, lfrot, rbrot, lbrot, rollyawpitch, ShadowT, sunrot;
    rx.rotx ( _rotx );
    ry.roty ( _roty );
    stransf = rx*ry; // set the scene transformation matrix
@@ -264,6 +265,8 @@ void AppWindow::glutDisplay ()
    rbrot = br*backR*centerbackr;
    lbrot = bl*backL*centerbackl;
 
+   sunrot.rotx(2 * M_PI * sunxc / 360);
+
 	//speed is fast
 	GsVec P = GsVec(0.0f, 0.0f, speed);
 	GsVec bd = leftright*updown*barrelroll*P;
@@ -283,7 +286,8 @@ void AppWindow::glutDisplay ()
    eye += R + leftright*updown*barrelroll*GsVec(0,0,2);
    center += R + GsVec(0, 0, 0);
 
-   _sun.build(1.0f, sunx, suny, sunz);
+   
+   
    float ground[4] = { 0, 1, 0, 4.99 };
    float light[4] = { sunx, suny, sunz, 0 };
    float  dot;
@@ -339,7 +343,7 @@ void AppWindow::glutDisplay ()
 	_model5.draw(stransf*ShadowT*shadowMat*rollyawpitch, sproj, _shadow, 1);
 	_model6.draw(stransf*ShadowT*shadowMat*rollyawpitch, sproj, _shadow, 1);
 	_side.draw(stransf, sproj, _light, col, textures);
-	_sun.draw(stransf, sproj);
+	_sun.draw(stransf * sunrot, sproj);
 
 
    // Swap buffers and draw:
@@ -364,13 +368,13 @@ void AppWindow::glutIdle()
 				animate = false;
 			}
 		}
-
-		sunxc++;
+		
+		/*sunxc++;
 		sunxz++;
 		if (sunxc == 360) {
 			sunxc = 0;
 			sunxz = 0;
-		}
+		}*/
 		//std::cout << "_wingsfly: " << _wingsflyR << std::endl;
 	}
 	if (curtime - lasttime2 > .01f && sunanim) {
