@@ -1,0 +1,96 @@
+newmtl ArchM73_Engine_B
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 0.00
+Ks 0.98 0.98 0.98
+Ns 0.95
+newmtl Material__25
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 0.00
+Ks 0.98 0.98 0.98
+Ns 0.95
+newmtl Material__123
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 0.00
+Ks 0.98 0.98 0.98
+Ns 0.95
+newmtl Material__125
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 0.00
+Ks 0.98 0.98 0.98
+Ns 0.95
+newmtl Material__127
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 0.00
+Ks 0.96 0.96 0.96
+Ns 0.95
+newmtl Material__129
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 0.00
+Ks 0.98 0.98 0.98
+Ns 0.95
+newmtl Material__132
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 0.00
+Ks 0.51 0.51 0.51
+Ns 0.95
+newmtl Material__134
+illum 4
+Kd 0.45 0.47 0.49
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 0.00
+Ks 1.00 1.00 1.00
+Ns 0.98
+newmtl Material__136
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 0.00
+Ks 0.96 0.96 0.96
+Ns 0.95
+newmtl Material__138
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 0.00
+Ks 0.98 0.98 0.98
+Ns 0.95
+newmtl Material__1270
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 0.75 0.75 0.75
+Ni 0.00
+Ks 1.00 0.97 0.97
+Ns 0.95
+newmtl Material__1280
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 0.00
+Ks 0.96 0.96 0.96
+Ns 0.95
