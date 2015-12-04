@@ -116,6 +116,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\app_main.cpp" />
+    <ClCompile Include="..\curve_eval.cpp" />
     <ClCompile Include="..\gsim\gs_image.cpp" />
     <ClCompile Include="..\gsim\gs_tree.cpp" />
     <ClCompile Include="..\gsim\gs_input.cpp" />
@@ -142,6 +143,7 @@
     <ClCompile Include="..\so_texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\curve_eval.h" />
     <ClInclude Include="..\gsim\gs_image.h" />
     <ClInclude Include="..\gsim\gs_manager.h" />
     <ClInclude Include="..\gsim\gs_tree.h" />

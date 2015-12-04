@@ -15,6 +15,7 @@
 # include "so_texture.h";
 # include "so_textured_tube.h"
 # include "so_capsule.h"
+# include "curve_eval.h"
 # include <cmath>
 
 // The functionality of your application should be implemented inside AppWindow
