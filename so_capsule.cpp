@@ -27,8 +27,8 @@ void SoCapsule::build(float r, float sunx, float suny, float sunz)
 	//P.reserve(18); C.reserve(18); // reserve space to avoid re-allocations from the calls below
 								  //sphere
 	int nfaces = 20;
-	double rt = .9;
-	double rb = .9;
+	double rt = 5;
+	double rb = 5;
 	double len = 0;
 	double pi = 3.14159265358979323846;
 	for (int i = 0; i < nfaces; i++) //for sphere

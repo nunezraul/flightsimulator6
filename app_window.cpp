@@ -265,7 +265,8 @@ void AppWindow::glutDisplay ()
    rbrot = br*backR*centerbackr;
    lbrot = bl*backL*centerbackl;
 
-   sunrot.rotx(2 * M_PI * sunxc / 360);
+   sunrot.translation( 5.f, 50*cos(2.f * M_PI * sunxc / 360.f) , 50*sin(2.f * M_PI * sunxc / 360.f));
+
 
 	//speed is fast
 	GsVec P = GsVec(0.0f, 0.0f, speed);
@@ -307,7 +308,7 @@ void AppWindow::glutDisplay ()
    camview.lookat ( eye, center, up ); // set our 4x4 "camera" matrix
    camview2.lookat(eye2, center2, up2);
 
-   float aspect=1.0f, znear=0.1f, zfar=5000.0f;
+   float aspect=1.0f, znear=0.1f, zfar=100.0f;
    persp.perspective ( _fovy, aspect, znear, zfar ); // set our 4x4 perspective matrix
 
    // Our matrices are in "line-major" format, so vertices should be multiplied on the 
@@ -378,8 +379,8 @@ void AppWindow::glutIdle()
 		//std::cout << "_wingsfly: " << _wingsflyR << std::endl;
 	}
 	if (curtime - lasttime2 > .01f && sunanim) {
-		sunxc++;
-		sunxz++;
+		sunxc += .5;
+		sunxz += .5;
 		lasttime = curtime;
 		if (sunxc == 360) {
 			sunxc = 0;
