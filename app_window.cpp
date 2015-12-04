@@ -126,7 +126,7 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
    {
    case ' ': camera = !camera; redraw(); break;
 	  case 27 : exit(1); // Esc was pressed
-      /*case 's' : std::cout<<"Smoothing normals...\n";
+      /*case 'o' : std::cout<<"Smoothing normals...\n";
                 _gsm.smooth ( GS_TORAD(35) ); 
                  printInfo(_gsm);
                  _model.build(_gsm); 

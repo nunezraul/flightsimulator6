@@ -76,6 +76,9 @@
     <ClCompile Include="..\so_capsule.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
+    <ClCompile Include="..\curve_eval.cpp">
+      <Filter>myapp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gsim\gs.h">
@@ -154,6 +157,9 @@
       <Filter>myapp</Filter>
     </ClInclude>
     <ClInclude Include="..\so_capsule.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\curve_eval.h">
       <Filter>myapp</Filter>
     </ClInclude>
   </ItemGroup>
