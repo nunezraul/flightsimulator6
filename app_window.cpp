@@ -244,7 +244,7 @@ void AppWindow::glutDisplay ()
    barrelroll.rotz(2 * M_PI * rotate / 360);
    leftright.roty(2 * M_PI * _turnlr / 360);
    updown.rotx(2 * M_PI * _turnud / 360);
-
+   //Roll, yaw and pitch for the airplane
    rollyawpitch = leftright*updown*barrelroll;
 
    //Translate front wings to center
@@ -259,20 +259,22 @@ void AppWindow::glutDisplay ()
    rightwing.rotz(2 * M_PI * _wingsflyR / 360); leftwing.rotz(2 * M_PI * -_wingsflyL / 360);
    //Rotate back wings
    backR.rotz(2 * M_PI * _backR / 360); backL.rotz(2 * M_PI * -_backL / 360);
+   //Sun rotation
+   sunrot.translation(5.f, 50 * cos(2.f * M_PI * sunxc / 360.f), 50 * sin(2.f * M_PI * sunxc / 360.f));
    //Clean up draw function
    rfrot = rr*rightwing*centerrwing;
    lfrot = rl*leftwing*centerlwing;
    rbrot = br*backR*centerbackr;
    lbrot = bl*backL*centerbackl;
 
-   sunrot.translation( 5.f, 50*cos(2.f * M_PI * sunxc / 360.f) , 50*sin(2.f * M_PI * sunxc / 360.f));
-
 
 	//speed is fast
+	//Translation matrix for pivot point
 	GsVec P = GsVec(0.0f, 0.0f, speed);
 	GsVec bd = leftright*updown*barrelroll*P;
 	R = R + bd;
 	transf.setrans(R);
+	stransf.setrans(bd);
 
 	GsVec sbd = leftright*P;
 	SR = SR + sbd;
@@ -336,7 +338,7 @@ void AppWindow::glutDisplay ()
 	_floor.draw(stransf, sproj, _light, textures);
 	_city.draw(stransf*offsety, sproj, _light, 0);
 	_city.draw(stransf*shadowMat*offsety, sproj, _shadow, 0);
-	//Shadow
+	//Shadows
 	_model.draw(stransf*ShadowT*shadowMat*rollyawpitch, sproj, _shadow, 1);
 	_model2.draw(stransf*ShadowT*shadowMat*rollyawpitch, sproj, _shadow, 1);
 	_model3.draw(stransf*ShadowT*shadowMat*rollyawpitch, sproj, _shadow, 1);
