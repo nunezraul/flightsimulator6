@@ -51,7 +51,7 @@ void SoTriangles::init (const char *file, GLuint *textures)
    glBindTexture(GL_TEXTURE_2D, 0);
    glBindVertexArray(0);
    I.init(0, 0); // free image from CPU 
-   if (!I.load("../texture/sides.bmp"))
+   /*if (!I.load("../texture/sides.bmp"))
 	   std::cout << "COULD NOT LOAD IMAGE!\n";
    else
 	   std::cout << "loaded\n";
@@ -65,7 +65,7 @@ void SoTriangles::init (const char *file, GLuint *textures)
    glGenerateMipmap(GL_TEXTURE_2D);
    glBindTexture(GL_TEXTURE_2D, 0);
    glBindVertexArray(0);
-   I.init(0, 0); // free image from CPU 
+   I.init(0, 0);*/ // free image from CPU 
  }
 
 // fill your arrays here, may be called each time the object has to change:

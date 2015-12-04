@@ -225,7 +225,7 @@ void AppWindow::glutDisplay ()
     { _axis.build(1.0f); // axis has radius 1.0
     }
    if (sunanim) {
-	   sunx = 2 * (cos(2 * M_PI*sunxc / 360) + sin(2 * M_PI*sunxc / 360)); suny = 20.0f; sunz = 2 * (-sin(2 * M_PI*sunxz / 360) + cos(2 * M_PI*sunxz / 360));
+	   sunx = 2 * (cos(2 * M_PI*sunxc / 360) + sin(2 * M_PI*sunxc / 360)); suny = 50.0f; sunz = 2 * (-sin(2 * M_PI*sunxz / 360) + cos(2 * M_PI*sunxz / 360));
    }
    else {
 	   sunx = 0.0; suny = 1; sunz = -.5;
@@ -237,7 +237,8 @@ void AppWindow::glutDisplay ()
    rx.rotx ( _rotx );
    ry.roty ( _roty );
    stransf = rx*ry; // set the scene transformation matrix
-
+   
+   //set city in floor
    offsety.translation(GsVec(0.0f, -5.7f, 0.0f));
 
    //Rotate many degrees
@@ -275,7 +276,8 @@ void AppWindow::glutDisplay ()
 	R = R + bd;
 	transf.setrans(R);
 	stransf.setrans(bd);
-
+	
+	//set translations for shadows of airplane
 	GsVec sbd = leftright*P;
 	SR = SR + sbd;
 	ShadowT.setrans(SR);
@@ -283,14 +285,15 @@ void AppWindow::glutDisplay ()
    // Define our projection transformation:
    // (see demo program in gltutors-projection.7z, we are replicating the same behavior here)
    GsMat camview, camview2, _birdseye, persp, sproj;
-
+   
+   //camera matrix setup
    GsVec eye(0,0,0), center(0,0,0), up(0,1,0);
    GsVec eye2(0, 10, 0), center2(0, 0, 0), up2(0, 0, 1);
+   //set translation for the camera based on airplane
    eye += R + leftright*updown*barrelroll*GsVec(0,0,2);
    center += R + GsVec(0, 0, 0);
-
    
-   
+   //Shadow matrix calculation
    float ground[4] = { 0, 1, 0, 4.99 };
    float light[4] = { sunx, suny, sunz, 0 };
    float  dot;
@@ -306,8 +309,9 @@ void AppWindow::glutDisplay ()
    shadowMat.setl3(0.0 - light[2] * ground[0], 0.0 - light[2] * ground[1], dot - light[2] * ground[2], 0.0 - light[2] * ground[3]);
    shadowMat.setl4(0.0 - light[3] * ground[0], 0.0 - light[3] * ground[1], 0.0 - light[3] * ground[2], dot - light[3] * ground[3]);
    
-   //shadowMat = shadowMat*ry*rx;
+   //fixed camera point
    camview.lookat ( eye, center, up ); // set our 4x4 "camera" matrix
+   //camera follows airplane
    camview2.lookat(eye2, center2, up2);
 
    float aspect=1.0f, znear=0.1f, zfar=100.0f;
@@ -327,8 +331,8 @@ void AppWindow::glutDisplay ()
    //  format, what will cause our values to be transposed, and we will then have in our 
    //  shaders vectors on the left side of a multiplication to a matrix.
    float col = 1;
+
    // Draw:
-   //if ( _viewaxis ) _axis.draw ( stransf, sproj );
 	_model.draw(stransf*transf*rollyawpitch, sproj, _light, 0);
 	_model2.draw(stransf*transf*rollyawpitch*rfrot, sproj, _light, 0);
 	_model3.draw(stransf*transf*rollyawpitch*lfrot, sproj, _light, 0);
@@ -348,7 +352,6 @@ void AppWindow::glutDisplay ()
 	_side.draw(stransf, sproj, _light, col, textures);
 	_sun.draw(stransf * sunrot, sproj);
 
-
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)
    glutSwapBuffers(); // we were drawing to the back buffer, now bring it to the front
@@ -357,38 +360,35 @@ void AppWindow::glutDisplay ()
 void AppWindow::glutIdle() 
 {
 	double curtime = gs_time();
+	//Wing animation
 	if (curtime - lasttime > .01f && animate) {
 		if (_wingsflyR >= 45 || _wingsflyR <= -45) {
 			_animinc *= -1;
 		}
+		//front wings
 		_wingsflyR += _animinc;
 		_wingsflyL += _animinc;
+		//back wings
 		_backR += _animinc;
 		_backL += _animinc;
 		lasttime = curtime;
+		//wait until wings are back to zero to end animation
 		if (resetanim == true) {
 			if (_wingsflyR == 0) {
 				animate = false;
 			}
 		}
-		
-		/*sunxc++;
-		sunxz++;
-		if (sunxc == 360) {
-			sunxc = 0;
-			sunxz = 0;
-		}*/
 		//std::cout << "_wingsfly: " << _wingsflyR << std::endl;
 	}
-	if (curtime - lasttime2 > .01f && sunanim) {
-		sunxc += .5;
-		sunxz += .5;
-		lasttime = curtime;
+	//Sun animation
+	if (curtime - lasttime2 > .1f && sunanim) {
+		sunxc += .1;
+		sunxz += .1;
+		lasttime2 = curtime;
 		if (sunxc == 360) {
 			sunxc = 0;
 			sunxz = 0;
 		}
-		//std::cout << "_wingsfly: " << _wingsflyR << std::endl;
 	}
 
 	redraw();
