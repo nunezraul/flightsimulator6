@@ -103,6 +103,8 @@ void SoModel::build ( GsModel& m )
    glBufferData ( GL_ARRAY_BUFFER, 4*sizeof(gsbyte)*C.size(), C.pt(), GL_STATIC_DRAW );
    glVertexAttribPointer ( 2, 4, GL_UNSIGNED_BYTE, GL_FALSE, 0, 0 );
 
+
+
    glBindVertexArray(0); // break the existing vertex array object binding.
 
    std::cout<<"build ok.\n";

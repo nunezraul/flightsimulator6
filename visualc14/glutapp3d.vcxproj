@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BE3DDA17-F918-42E2-B822-4C8A6EF632C9}</ProjectGuid>
     <RootNamespace>glutapp</RootNamespace>
-    <ProjectName>Flight Simulator V</ProjectName>
+    <ProjectName>Flight Simulator VI</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -126,6 +126,7 @@
     <ClCompile Include="..\gsim\gs_string.cpp" />
     <ClCompile Include="..\gsim\gs_strings.cpp" />
     <ClCompile Include="..\so_capsule.cpp" />
+    <ClCompile Include="..\so_curve.cpp" />
     <ClCompile Include="..\so_textured_tube.cpp" />
     <ClCompile Include="..\so_axis.cpp" />
     <ClCompile Include="..\app_window.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="..\gsim\gs_strings.h" />
     <ClInclude Include="..\gsim\gs_trace.h" />
     <ClInclude Include="..\so_capsule.h" />
+    <ClInclude Include="..\so_curve.h" />
     <ClInclude Include="..\so_textured_tube.h" />
     <ClInclude Include="..\so_axis.h" />
     <ClInclude Include="..\app_window.h" />

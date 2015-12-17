@@ -18,12 +18,13 @@ float binomial_coff(float n, float k)
 
 GsVec eval_bezier(float t, const GsArray<GsVec>& ctrlpnts) {
 	GsVec P;
-	P.x = 0; P.y = 0;
+	P.x = 0; P.y = 0; P.z = 0;
 	int size = ctrlpnts.size();
 	for (int i = 0; i<size; i++)
 	{
 		P.x = P.x + binomial_coff((float)(size-1), (float)i) * pow(t, (double)i) * pow((1 - t), (size-1 - i)) * ctrlpnts[i].x;
 		P.y = P.y + binomial_coff((float)(size-1), (float)i) * pow(t, (double)i) * pow((1 - t), (size-1 - i)) * ctrlpnts[i].y;
+		P.z = P.z + binomial_coff((float)(size - 1), (float)i) * pow(t, (double)i) * pow((1 - t), (size - 1 - i)) * ctrlpnts[i].z;
 	}
 	return P;
 }

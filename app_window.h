@@ -16,6 +16,7 @@
 # include "so_textured_tube.h"
 # include "so_capsule.h"
 # include "curve_eval.h"
+# include "so_curve.h"
 # include <cmath>
 
 // The functionality of your application should be implemented inside AppWindow
@@ -31,6 +32,8 @@ class AppWindow : public GlutWindow
 	SoTriangles _floor, _side1, _side2, _side3, _side4;
 	SoTexturedTube _side;
 	SoCapsule _sun;
+	SoCurve _curve, _normal, _tangent, _bitangent;
+	GsArray<GsVec> _norm, _tan, _bit;
 
     // Scene data:
     bool  _viewaxis, animate, resetanim, camera, sunanim;
@@ -44,8 +47,17 @@ class AppWindow : public GlutWindow
 	float _turnlr, _turnud = 0, _wingsflyR = 0, _wingsflyL = 0, _animinc = 1, _backL = 0, _backR = 0;
 	int _w, _h;
 	GsVec R, SR;
-	double lasttime, lasttime2;
+	double lasttime = 0, lasttime2 = 0, lasttime3 = 0;
 	float sunx, suny, sunz, sunxc = 0, sunxz = 0;
+	//curve shit
+	float cx, cy, cz;
+	GsArray<GsVec> controlpoints;
+	GsArray<GsVec> curvepoints;
+	bool curvegen;
+	bool curving;
+	GsVec cdiff, ptrns, ctangent, cbitangent, cnormal;
+	GsMat oldtrans;
+	int ccount;
 
    public :
     AppWindow ( const char* label, int x, int y, int w, int h );
