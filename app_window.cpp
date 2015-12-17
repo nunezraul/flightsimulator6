@@ -246,20 +246,14 @@ void AppWindow::glutDisplay ()
    camerarot = rx*ry; // set the scene transformation matrix
 
    if (curving) {
-	   //ptrns *= -1;
 	   ctrans.setrans(ptrns);
-	   /*ctrans = oldtrans - ctrans;
-	   std::cout << "ctrans:\n" << ctrans << std::endl;*/
-	   frenet.setl1(ctangent.x, cbitangent.x, cnormal.x, 0);
-	   frenet.setl2(ctangent.y, cbitangent.y, cnormal.y, 0);
-	   frenet.setl3(ctangent.z, cbitangent.z, cnormal.z, 0);
-	   //frenet.setl4(0, 0, 0, 1);
-	   //frenet.setl4(ptrns);
+	   //Frenet-Sennet Frame
+	   frenet.setc3(-1*ctangent);
+	   frenet.setc2(cbitangent);
+	   frenet.setc1(cnormal);
+
+	   //std::cout << "frenet:\n" << frenet << std::endl;
    }
-   else ctrans.setrans(GsVec(0, 0, 0));
-   //ctrans2.roty(acos(dot(GsVec(0,0,1), cdiff)));
-   //ctrans3.rotx(acos(dot(GsVec(1,0,0), cnormal)));
-   //ctrans4.rotz(acos(dot(GsVec(0, 1, 0), cbitangent)));
    //std::cout << "ctrans:\n" << ctrans2 << std::endl << ctrans3 << std::endl;
    
    //set city in floor
@@ -292,26 +286,21 @@ void AppWindow::glutDisplay ()
    rbrot = br*backR*centerbackr;
    lbrot = bl*backL*centerbackl;
 
-	/*GsVec P = GsVec(0.0f, 0.0f, speed);
-	frennet.setc1(cdiff);
-	frennet.setc2(cbitangent);
-	frennet.setc3(P);
-	frennet.setc4(ptrns);*/
-	//std::cout << "frennet:\n" << frennet << std::endl;
-
 	//speed is fast
 	//Translation matrix for pivot point
 	GsVec P = GsVec(0.0f, 0.0f, speed);
-	GsVec bd = leftright*updown*barrelroll*P;
-	R = R + bd;
+	GsVec bd = leftright*updown*barrelroll*frenet*P;
+	if (ccount == curvepoints.size()-1 && curvepoints.size() != 0) {
+		std::cout << "finals\n";
+		//bd = ctrans*bd;
+	}
+	R += ptrns;
+	//R = R;
 	transf.setrans(R);
-	//transf *= ctrans;
+	//transf = transf;
 
 	//rollyawpitch = ctrans3*ctrans2*leftright*updown*barrelroll;
 	//stransf.setrans(bd);
-
-	//GLfloat M[16] = { cdiff.x, cdiff.y, cdiff.z, 0, cbitangent.x, cbitangent.y, cbitangent.z, 0, cnormal.x, cnormal.y, cnormal.z, 0, R.x, R.y, R.z, 1 };
-	//glLoadMatrixf(M);
 	
 	//set translations for shadows of airplane
 	GsVec sbd = leftright*P;
@@ -326,7 +315,7 @@ void AppWindow::glutDisplay ()
    GsVec eye(0,0,0), center(0,0,0), up(0,1,0);
    GsVec eye2(0, 10, 0), center2(0, 0, 0), up2(0, 0, 1);
    //set translation for the camera based on airplane
-   eye += R + ctrans*leftright*updown*barrelroll*camerarot*GsVec(0,0,2);
+   eye += R + leftright*updown*barrelroll*camerarot*ctrans*GsVec(0,0,2);
    //center += R + GsVec(0, 0, 0);
    center = ctrans*cnormal;
    
@@ -350,13 +339,14 @@ void AppWindow::glutDisplay ()
    if (curvegen) {
 	   std::cout << "R: " << R << std::endl;
 	   curvepoints.capacity(0);
-	   controlpoints.push() = GsVec(rand() % 20 + (-10), rand() % 20 + (-10), rand() % 20 + (-3)); controlpoints.push() = R;
+	   controlpoints.push() = GsVec(rand() % 20 + (-10), rand() % 20 + (-10), rand() % 20 + (-3)); controlpoints.push() = R; controlpoints.push(GsVec(R.x, R.y, R.z - .5f));
 	   for (int i = 0; i < 10; i++) {
 		   float x = rand() % 20 + (-10);
 		   float y = rand() % 20 + (-10);
 		   float z = rand() % 20 + (-3);
 		   controlpoints.push() = GsVec(x, y, z);
 	   }
+	   controlpoints.push() = R; controlpoints.push() = GsVec(rand() % 20 + (-10), rand() % 20 + (-10), rand() % 20 + (-3));
 	   std::cout << "controlpoints: " << controlpoints << std::endl;
 	   for (int j = 0; j < controlpoints.size() - 3; j++) {
 		   GsArray<GsVec> pnts; pnts.push() = controlpoints[j]; pnts.push() = controlpoints[j + 1]; pnts.push() = controlpoints[j + 2]; pnts.push() = controlpoints[j + 3];
@@ -406,12 +396,12 @@ void AppWindow::glutDisplay ()
    float col = 1;
 
    // Draw:
-	_model.draw(stransf*ctrans*frenet*transf*rollyawpitch, sproj, _light, 0);
-	_model2.draw(stransf*ctrans*frenet*transf*rollyawpitch*rfrot, sproj, _light, 0);
-	_model3.draw(stransf*ctrans*frenet*transf*rollyawpitch*lfrot, sproj, _light, 0);
-	_model4.draw(stransf*ctrans*frenet*transf*rollyawpitch, sproj, _light, 0);
-	_model5.draw(stransf*ctrans*frenet*transf*rollyawpitch*rbrot, sproj, _light, 0);
-	_model6.draw(stransf*ctrans*frenet*transf*rollyawpitch*lbrot, sproj, _light, 0);
+	_model.draw(stransf*frenet*transf*rollyawpitch, sproj, _light, 0);
+	_model2.draw(stransf*frenet*transf*rollyawpitch*rfrot, sproj, _light, 0);
+	_model3.draw(stransf*frenet*transf*rollyawpitch*lfrot, sproj, _light, 0);
+	_model4.draw(stransf*frenet*transf*rollyawpitch, sproj, _light, 0);
+	_model5.draw(stransf*frenet*transf*rollyawpitch*rbrot, sproj, _light, 0);
+	_model6.draw(stransf*frenet*transf*rollyawpitch*lbrot, sproj, _light, 0);
 	_floor.draw(stransf, sproj, _light, textures);
 	_city.draw(stransf*offsety, sproj, _light, 0);
 	_city.draw(stransf*shadowMat*offsety, sproj, _shadow, 0);
@@ -429,7 +419,7 @@ void AppWindow::glutDisplay ()
 	_side.draw(stransf, sproj, _light, col, textures);
 	_sun.draw(stransf * sunrot, sproj);
 
-	oldtrans.setrans(ptrns);
+	//oldtrans.setrans(ptrns);
 
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)
@@ -471,7 +461,7 @@ void AppWindow::glutIdle()
 	}
 	//curving
 	//std::cout << curvepoints << std::endl;
-	if (curtime - lasttime3 > .01f && curving) {
+	if (curtime - lasttime3 > .001f && curving) {
 		//std::cout << curvepoints[ccount + 1] << " " << curvepoints[ccount] << std::endl;
 		cdiff = curvepoints[ccount + 1] - curvepoints[ccount];
 		ctangent = cdiff; ctangent.normalize();
@@ -488,6 +478,7 @@ void AppWindow::glutIdle()
 
 		ccount++;
 		if (ccount == curvepoints.size()) {
+			std::cout << "end of curve\n";
 			ccount = 0;
 			curving = false;
 			curvepoints.capacity(0);

@@ -148,16 +148,16 @@ class GsMat
     void setc4 ( float x, float y, float z, float w ) { e[3]=x; e[7]=y; e[11]=z; e[15]=w; }
 
     /*! Sets the first three elements of column 1. Implemented inline. */
-    void setc1 ( const GsVec& v ) { e[0]=v.x; e[1]=v.y; e[2]=v.z; }
+    void setc1 ( const GsVec& v ) { e[0]=v.x; e[4]=v.y; e[8]=v.z; }
     
     /*! Sets the first three elements of column 2. Implemented inline. */
-    void setc2 ( const GsVec& v ) { e[4]=v.x; e[5]=v.y; e[6]=v.z; }
+    void setc2 ( const GsVec& v ) { e[1]=v.x; e[5]=v.y; e[9]=v.z; }
     
     /*! Sets the first three elements of column 3. Implemented inline. */
-    void setc3 ( const GsVec& v ) { e[8]=v.x; e[9]=v.y; e[10]=v.z; }
+    void setc3 ( const GsVec& v ) { e[2]=v.x; e[6]=v.y; e[10]=v.z; }
     
     /*! Sets the first three elements of column 4. Implemented inline. */
-    void setc4 ( const GsVec& v ) { e[12]=v.x; e[13]=v.y; e[14]=v.z; }
+    void setc4 ( const GsVec& v ) { e[3]=v.x; e[7]=v.y; e[11]=v.z; }
 
     /*! Returns true if all elements are equal to 0.0, false otherwise. */
     bool isnull () const { return *this==null; }
