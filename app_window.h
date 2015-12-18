@@ -29,14 +29,15 @@ class AppWindow : public GlutWindow
     // My scene objects:
     SoAxis _axis;
     SoModel _model, _model2, _model3, _model4, _model5, _model6, _city;
-	SoTriangles _floor, _side1, _side2, _side3, _side4;
+	//SoTriangles _floor, _side1, _side2, _side3, _side4;
 	SoTexturedTube _side;
 	SoCapsule _sun;
 	SoCurve _curve, _normal, _tangent, _bitangent;
 	GsArray<GsVec> _norm, _tan, _bit;
 
     // Scene data:
-    bool  _viewaxis, animate, resetanim, camera, sunanim;
+    bool  _viewaxis, animate, resetanim, camera, sunanim, frontfl, backfl, concatfl, concatflr, concatch1, concatch2, barrellroll, barrellrollr, halfrollflip;
+	int flcount, brcount, halfcount = 0;
     GsModel _gsm, _gsm2, _gsm3, _gsm4, _gsm5, _gsm6, _building;
     GsLight _light, _shadow;
 	GLuint *textures = new GLuint[2];
@@ -47,14 +48,13 @@ class AppWindow : public GlutWindow
 	float _turnlr, _turnud = 0, _wingsflyR = 0, _wingsflyL = 0, _animinc = 1, _backL = 0, _backR = 0;
 	int _w, _h;
 	GsVec R, SR;
-	double lasttime = 0, lasttime2 = 0, lasttime3 = 0;
+	double lasttime = 0, lasttime2 = 0, lasttime3 = 0, lasttime4 = 0;
 	float sunx, suny, sunz, sunxc = 0, sunxz = 0;
 	//curve shit
 	float cx, cy, cz;
 	GsArray<GsVec> controlpoints;
 	GsArray<GsVec> curvepoints;
-	bool curvegen;
-	bool curving;
+	bool curvegen, curving, _showcurve, _shownorms, _exitcurve;
 	GsVec cdiff, ptrns, ctangent, cbitangent, cnormal;
 	GsMat oldtrans;
 	int ccount;

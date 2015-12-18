@@ -15,7 +15,7 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    _w = w;
    _h = h;
    rotate = 0;
-   speed = 0; _turnlr = 0;
+   speed = 0; _turnlr = 0; _turnud = 0;
    xview = 0; yview = 0;
    animate = false;
    sunx = 0.5f; suny = 1.0f; sunz = 0.8f;
@@ -23,6 +23,17 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    sunanim = true;
    curvegen = false;
    curving = false;
+   frontfl = false;
+   backfl = false;
+   concatfl = false;
+   concatch1 = false;
+   concatch2 = false;
+   concatflr = false;
+   flcount = 0;
+   brcount = 0;
+   barrellroll = false, barrellrollr = false;
+   _showcurve = false; _shownorms = false;
+   halfrollflip = false;
    ccount = 0;
    oldtrans.setrans(GsVec(0, 0, 0));
  }
@@ -31,8 +42,7 @@ void AppWindow::initPrograms ()
  {
    // Init my scene objects:
 	 _axis.init(); _curve.init();
-   _floor.init( "../texture/_image.bmp", textures); _floor.build( 20.0f, -5.0f, 20.0f, textures);
-   _side.init(); _side.build(25.0f, 20.0f, 20.0f, 25, textures);
+   _side.init("../texture/_image.bmp", textures); _side.build(25.0f, 30.0f, 30.0f, 25, textures);
    _sun.init(); 
    _sun.build(1.0f, 1, 1, 0);
    _building.load("../models/The_City.obj"); //_building.scale(.7f);
@@ -65,7 +75,7 @@ void AppWindow::loadModel ( int model )
    float f;
    GsString file;
    switch ( model )
-    { case 6:	f=0.1f; 
+    { default:	f=0.1f; 
 				_gsm.load("../models/757body.obj");
 				_gsm2.load("../models/757rightwing.obj");
 				_gsm3.load("../models/757leftwing.obj"); 
@@ -80,7 +90,7 @@ void AppWindow::loadModel ( int model )
 				_gsm.scale(f); _gsm2.scale(f); _gsm3.scale(f); _gsm4.scale(f); _gsm5.scale(f); _gsm6.scale(f);
 				_model.build(_gsm); _model2.build(_gsm2); _model3.build(_gsm3); _model4.build(_gsm4); _model5.build(_gsm5); _model6.build(_gsm6);
 				break;
-      case 7:	f=0.20f;
+      /*case 7:	f=0.20f;
 				file = "../models/al.obj";
 				_gsm.load( file );
 				_gsm2.load("../models/blank.obj"); _gsm3.load("../models/blank.obj"); _gsm4.load("../models/blank.obj"); _gsm5.load("../models/blank.obj"); _gsm6.load("../models/blank.obj");
@@ -109,8 +119,8 @@ void AppWindow::loadModel ( int model )
 				printInfo(_gsm);
 				_gsm.scale(f);
 				_model.build(_gsm);
-				break;
-      default: return;
+				break;*/
+      //default: return;
     }
 	redraw();
  }
@@ -157,10 +167,10 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
                  break;
 	  case 'e': rotate += 1; redraw(); break;
 	  case 'q': rotate -= 1; redraw(); break;
-	  case 'w': _turnud -= 1; redraw(); break;
-	  case 's': _turnud += 1; redraw(); break;
-	  case 'a': _turnlr += 1; redraw(); break;
-	  case 'd': _turnlr -= 1; redraw(); break;
+	  case 'w': _turnud -= 1; if(curving) _exitcurve = true; redraw(); break;
+	  case 's': _turnud += 1; if (curving) _exitcurve = true; redraw(); break;
+	  case 'a': _turnlr += 1; if (curving) _exitcurve = true; redraw(); break;
+	  case 'd': _turnlr -= 1; if (curving) _exitcurve = true; redraw(); break;
 	  case '[': speed -= .001; redraw(); break;
 	  case '\'': speed += .001; redraw(); break;
 	  case 'n': _wingsflyR++; redraw(); break;
@@ -171,8 +181,17 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
 	  case 'k': _backR--; redraw(); break;
 	  case 'j': _backL++; redraw(); break;
 	  case 'h': _backL--; redraw(); break;
+	  case 'z': _showcurve = !_showcurve; redraw(); break;
+	  case 'x': _shownorms = !_shownorms; redraw(); break;
 	  case 'y': sunanim = !sunanim; redraw(); break;
 	  case '1': curvegen = !curvegen; break;
+	  case '2': frontfl = !frontfl; redraw(); break;
+	  case '3': backfl = !backfl; redraw(); break;
+	  case '4': barrellroll = !barrellroll; break;
+	  case '5': barrellrollr = !barrellrollr; break;
+	  case '6': concatfl = !concatfl; concatch1 = !concatch1;  redraw(); break;
+	  case '7': concatflr = !concatflr; concatch1 = !concatch1; redraw(); break;
+	  case '8': halfrollflip = !halfrollflip; redraw(); break;
 	  case 't': if (!animate) { animate = true; resetanim = false; }
 				else resetanim = true; redraw(); break;
       default : loadModel ( int(key-'0') );
@@ -247,6 +266,9 @@ void AppWindow::glutDisplay ()
 
    if (curving) {
 	   ctrans.setrans(ptrns);
+	   std::cout << "ptrns: \n" << ptrns << std::endl;
+	   std::cout << "ctrans:\n" << ctrans << std::endl;
+
 	   //Frenet-Sennet Frame
 	   frenet.setc3(-1*ctangent);
 	   frenet.setc2(cbitangent);
@@ -264,7 +286,10 @@ void AppWindow::glutDisplay ()
    leftright.roty(2 * M_PI * _turnlr / 360);
    updown.rotx(2 * M_PI * _turnud / 360);
    //Roll, yaw and pitch for the airplane
-   rollyawpitch = leftright*updown*barrelroll;
+   if (!curving) {
+	   rollyawpitch = leftright*updown*barrelroll;
+   }
+   
 
    //Translate front wings to center
    centerrwing.translation(GsVec(-0.1f,-0.15f,0.0f)); centerlwing.translation(GsVec(0.1f, -0.15f, 0.0f));
@@ -288,19 +313,26 @@ void AppWindow::glutDisplay ()
 
 	//speed is fast
 	//Translation matrix for pivot point
-	GsVec P = GsVec(0.0f, 0.0f, speed);
-	GsVec bd = leftright*updown*barrelroll*frenet*P;
-	if (ccount == curvepoints.size()-1 && curvepoints.size() != 0) {
-		std::cout << "finals\n";
-		//bd = ctrans*bd;
-	}
-	R += ptrns;
-	//R = R;
-	transf.setrans(R);
-	//transf = transf;
+   GsVec P = GsVec(0, 0, speed);
+   GsVec bd = leftright*updown*barrelroll*P;
+   if (!curving) {
+	   R += bd;
+	   transf.setrans(R);
+   }
+   else {
+	   //rollyawpitch.setc1(GsVec(0, 0, 0)); rollyawpitch.setc2(GsVec(0, 0, 0)); rollyawpitch.setc3(GsVec(0, 0, 0)); rollyawpitch.setc4(GsVec(0, 0, 0));
+	   transf.setrans(GsVec(0, 0, 0));
+   }
+   if (_exitcurve) {
+	   curving = false;
+	   //R = bd + ptrns;
+	   R = bd + ptrns;
+	   ctrans.setrans(GsVec(0, 0, 0));
+	   _exitcurve = false;
+   }
+	//std::cout << "transf:\n" << transf << std::endl;
 
-	//rollyawpitch = ctrans3*ctrans2*leftright*updown*barrelroll;
-	//stransf.setrans(bd);
+
 	
 	//set translations for shadows of airplane
 	GsVec sbd = leftright*P;
@@ -315,9 +347,14 @@ void AppWindow::glutDisplay ()
    GsVec eye(0,0,0), center(0,0,0), up(0,1,0);
    GsVec eye2(0, 10, 0), center2(0, 0, 0), up2(0, 0, 1);
    //set translation for the camera based on airplane
-   eye += R + leftright*updown*barrelroll*camerarot*ctrans*GsVec(0,0,2);
-   //center += R + GsVec(0, 0, 0);
-   center = ctrans*cnormal;
+   eye += R + leftright*updown*barrelroll*camerarot*GsVec(0,0,2);
+   if (!curving) {
+	   center += R + GsVec(0, 0, 0);
+   }
+   else {
+	   eye = bd + ctrans*frenet*camerarot*GsVec(0, 0, 2);
+	   center = ctrans*cnormal;
+   }
    
    //Shadow matrix calculation
    float ground[4] = { 0, 1, 0, 4.99 };
@@ -337,16 +374,27 @@ void AppWindow::glutDisplay ()
    
    //Curve generation
    if (curvegen) {
+	   ccount = 0;
 	   std::cout << "R: " << R << std::endl;
 	   curvepoints.capacity(0);
-	   controlpoints.push() = GsVec(rand() % 20 + (-10), rand() % 20 + (-10), rand() % 20 + (-3)); controlpoints.push() = R; controlpoints.push(GsVec(R.x, R.y, R.z - .5f));
+	   controlpoints.push() = GsVec(rand() % 20 + (-10), rand() % 20 + (-10), rand() % 20 + (-3));
+	   if (!curving) {
+		   controlpoints.push() = R; controlpoints.push(GsVec(R.x, R.y, R.z - .5f));
+	   }
+	   else {
+		   controlpoints.push() = ptrns; controlpoints.push(GsVec(ptrns.x, ptrns.y, ptrns.z - .5f));
+	   }
 	   for (int i = 0; i < 10; i++) {
 		   float x = rand() % 20 + (-10);
 		   float y = rand() % 20 + (-10);
 		   float z = rand() % 20 + (-3);
 		   controlpoints.push() = GsVec(x, y, z);
 	   }
-	   controlpoints.push() = R; controlpoints.push() = GsVec(rand() % 20 + (-10), rand() % 20 + (-10), rand() % 20 + (-3));
+	   if (!curving) 
+		   controlpoints.push() = R; 
+	   else 
+		   controlpoints.push() = ptrns;
+	   controlpoints.push() = controlpoints[3];
 	   std::cout << "controlpoints: " << controlpoints << std::endl;
 	   for (int j = 0; j < controlpoints.size() - 3; j++) {
 		   GsArray<GsVec> pnts; pnts.push() = controlpoints[j]; pnts.push() = controlpoints[j + 1]; pnts.push() = controlpoints[j + 2]; pnts.push() = controlpoints[j + 3];
@@ -396,19 +444,21 @@ void AppWindow::glutDisplay ()
    float col = 1;
 
    // Draw:
-	_model.draw(stransf*frenet*transf*rollyawpitch, sproj, _light, 0);
-	_model2.draw(stransf*frenet*transf*rollyawpitch*rfrot, sproj, _light, 0);
-	_model3.draw(stransf*frenet*transf*rollyawpitch*lfrot, sproj, _light, 0);
-	_model4.draw(stransf*frenet*transf*rollyawpitch, sproj, _light, 0);
-	_model5.draw(stransf*frenet*transf*rollyawpitch*rbrot, sproj, _light, 0);
-	_model6.draw(stransf*frenet*transf*rollyawpitch*lbrot, sproj, _light, 0);
-	_floor.draw(stransf, sproj, _light, textures);
+	_model.draw(stransf*transf*ctrans*frenet*rollyawpitch, sproj, _light, 0);
+	_model2.draw(stransf*transf*ctrans*frenet*rollyawpitch*rfrot, sproj, _light, 0);
+	_model3.draw(stransf*transf*ctrans*frenet*rollyawpitch*lfrot, sproj, _light, 0);
+	_model4.draw(stransf*transf*ctrans*frenet*rollyawpitch, sproj, _light, 0);
+	_model5.draw(stransf*transf*ctrans*frenet*rollyawpitch*rbrot, sproj, _light, 0);
+	_model6.draw(stransf*transf*ctrans*frenet*rollyawpitch*lbrot, sproj, _light, 0);
 	_city.draw(stransf*offsety, sproj, _light, 0);
 	_city.draw(stransf*shadowMat*offsety, sproj, _shadow, 0);
-	_curve.draw(stransf, sproj);
-	_tangent.draw(stransf, sproj);
-	_normal.draw(stransf, sproj);
-	_bitangent.draw(stransf, sproj);
+	if(_showcurve)
+		_curve.draw(stransf, sproj);
+	if (_shownorms) {
+		_tangent.draw(stransf, sproj);
+		_normal.draw(stransf, sproj);
+		_bitangent.draw(stransf, sproj);
+	}
 	//Shadows
 	_model.draw(stransf*ShadowT*shadowMat*rollyawpitch, sproj, _shadow, 1);
 	_model2.draw(stransf*ShadowT*shadowMat*rollyawpitch, sproj, _shadow, 1);
@@ -461,7 +511,7 @@ void AppWindow::glutIdle()
 	}
 	//curving
 	//std::cout << curvepoints << std::endl;
-	if (curtime - lasttime3 > .001f && curving) {
+	if (curtime - lasttime3 > 0.001f && curving) {
 		//std::cout << curvepoints[ccount + 1] << " " << curvepoints[ccount] << std::endl;
 		cdiff = curvepoints[ccount + 1] - curvepoints[ccount];
 		ctangent = cdiff; ctangent.normalize();
@@ -485,6 +535,132 @@ void AppWindow::glutIdle()
 		}
 		lasttime3 = curtime;
 	}
+
+
+
+	//Front flip Animation
+	if (frontfl && flcount <= 360) {
+		_turnud += 1;
+		flcount++;
+		std::cout << _turnud << std::endl;
+		if (flcount == 360) {
+			flcount = 0;
+			frontfl = false;
+		}
+	}
+
+	//Back flip Animation
+	if (backfl && flcount <= 360) {
+		_turnud -= 1;
+		flcount++;
+		std::cout << _turnud << std::endl;
+		if (flcount == 360) {
+			flcount = 0;
+			backfl = false;
+		}
+	}
+
+	//Barrell Roll Animation
+	if (barrellroll && brcount <= 360)
+	{
+		/*if (rotate >= 0 && rotate <= 360)
+			rotate += 2;*/
+		rotate++;
+		brcount++;
+		if (brcount == 360) {
+			brcount = 0;
+			barrellroll = false;
+		}
+	}
+
+	//Reverse Barrell Roll Animation
+	if (barrellrollr && brcount <= 360)
+	{
+		/*if (rotate >= -360 && rotate <= 0)
+			rotate -= 2;*/
+		rotate--;
+		brcount++;
+		if (brcount == 360) {
+			brcount = 0;
+			barrellrollr = false;
+		}
+	}
+
+	//Concatenation 1 - Back Flip + Barrell Roll
+	if (concatfl && flcount <= 720) {
+
+		if (concatch1 && flcount <= 720) {
+			_turnud += 0.5;
+			flcount++;
+
+			if (flcount == 720) {
+				flcount = 0;
+
+				concatch2 = true;
+				concatch1 = false;
+			}
+		}
+
+		if (concatch2 && brcount <= 360)
+		{
+			/*if (rotate >= 0 && rotate <= 360)
+				rotate += 2;*/
+			rotate++;
+			brcount++;
+			if (brcount == 360) {
+				brcount = 0;
+				concatch2 = false;
+				concatfl = false;
+			}
+		}
+	}
+
+	//Concatenation 2 - Front Flip + Reverse Barrell Roll
+	if (concatflr && flcount <= 720) {
+		if (concatch1 && flcount <= 720) {
+			_turnud -= 0.5;
+			flcount++;
+			//std::cout << flcount << std::endl;
+			if (flcount == 720) {
+				flcount = 0;
+
+				concatch2 = true;
+				concatch1 = false;
+			}
+		}
+
+		if (concatch2 && brcount <= 360)
+		{
+			/*if (rotate >= -360 && rotate <= 0)
+				rotate -= 2;*/
+			rotate--;
+			brcount++;
+			//std::cout << brcount << std::endl;
+			if (brcount == 360) {
+				brcount = 0;
+				concatch2 = false;
+				concatflr = false;
+			}
+		}
+
+	}
+
+	if (halfrollflip && curtime - lasttime4 > 0.01f) {
+		if (halfcount <= 180) {
+			_turnud++;
+			rotate++;
+		}
+		/*if (halfcount >= 180) {
+			rotate++;
+		}*/
+		if (halfcount == 180) {
+			halfcount = 0;
+			halfrollflip = false;
+		}
+		halfcount++;
+		lasttime4 = curtime;
+	}
+
 
 	redraw();
 }

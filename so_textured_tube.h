@@ -33,7 +33,7 @@ public:
 	};
 
 	SoTexturedTube();
-	void init();
+	void init(const char *file, GLuint *textures);
 	void draw(GsMat& tr, GsMat& pr, const GsLight &l, float &col, GLuint *texture);
 	void build(float len, float rt, float rb, float nfaces, GLuint * texture);
 

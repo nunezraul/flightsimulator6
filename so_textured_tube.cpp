@@ -5,7 +5,7 @@ SoTexturedTube::SoTexturedTube()
 	_numpoints = 0;
 }
 
-void SoTexturedTube::init()
+void SoTexturedTube::init(const char *file, GLuint *textures)
 {
 
 	// Build program:
@@ -32,14 +32,15 @@ void SoTexturedTube::init()
 	_prog.uniform_location(9, "sh");
 	_prog.uniform_location(10, "Tex1");
 
-	/*
+
+
 	GsImage I;
-	if (!I.load("../texture/sides.bmp"))
+	if (!I.load("../texture/backtoback.bmp"))
 		std::cout << "COULD NOT LOAD IMAGE!\n";
 	else
 		std::cout << "loaded\n";
 	//glGenTextures(2, texture); // ids start at 1
-	glBindTexture(GL_TEXTURE_2D, *texture);
+	glBindTexture(GL_TEXTURE_2D, *textures);
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, I.w(), I.h(), 0, GL_RGBA, GL_UNSIGNED_BYTE, I.data());
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -50,7 +51,8 @@ void SoTexturedTube::init()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindVertexArray(0);
 	I.init(0, 0); // free image from CPU 
-	*/
+
+
 }
 
 void SoTexturedTube::build(float len, float rt, float rb, float nfaces, GLuint * texture)
@@ -68,28 +70,53 @@ void SoTexturedTube::build(float len, float rt, float rb, float nfaces, GLuint *
 		//Side triangles
 		P.push_back(GsVec(cos(i * 2 * pi / nfaces) * rt, len, sin(i * 2 * pi / nfaces) *rt));
 		N.push_back(GsVec(cos(i * 2 * pi / nfaces), 0, sin(i * 2 * pi / nfaces)));
-		T.push_back(GsVec2(i / nfaces, 0.0f));
+		T.push_back(GsVec2((i / nfaces) / 2.f, 0.0f));
 
 		P.push_back(GsVec(cos(i * 2 * pi / nfaces) * rb, -len, sin(i * 2 * pi / nfaces) *rb));
 		N.push_back(GsVec(cos(i * 2 * pi / nfaces), 0, sin(i * 2 * pi / nfaces)));
-		T.push_back(GsVec2(i / nfaces, 1.0f));
+		T.push_back(GsVec2((i / nfaces) / 2.f, 0.5f));
 
 		P.push_back(GsVec(cos((i + 1) * 2 * pi / nfaces) * rb, -len, sin((i + 1) * 2 * pi / nfaces) *rb));
 		N.push_back(GsVec(cos((i + 1) * 2 * pi / nfaces), 0, sin((i + 1) * 2 * pi / nfaces)));
-		T.push_back(GsVec2((i + 1) / nfaces, 1.0f));
+		T.push_back(GsVec2(((i + 1) / nfaces) / 2.f, 0.5f));
 
 		P.push_back(GsVec(cos(i * 2 * pi / nfaces) * rt, len, sin(i * 2 * pi / nfaces) *rt));
 		N.push_back(GsVec(cos(i * 2 * pi / nfaces), 0, sin(i * 2 * pi / nfaces)));
-		T.push_back(GsVec2(i / nfaces, 0.0f));
+		T.push_back(GsVec2((i / nfaces) / 2.f, 0.0f));
 
 		P.push_back(GsVec(cos((i + 1) * 2 * pi / nfaces) * rt, len, sin((i + 1) * 2 * pi / nfaces) *rt));
 		N.push_back(GsVec(cos((i + 1) * 2 * pi / nfaces), 0, sin((i + 1) * 2 * pi / nfaces)));
-		T.push_back(GsVec2((i + 1) / nfaces, 0.0f));
+		T.push_back(GsVec2(((i + 1) / nfaces) / 2.f, 0.0f));
 
 		P.push_back(GsVec(cos((i + 1) * 2 * pi / nfaces) * rb, -len, sin((i + 1) * 2 * pi / nfaces) *rb));
 		N.push_back(GsVec(cos((i + 1) * 2 * pi / nfaces), 0, sin((i + 1) * 2 * pi / nfaces)));
-		T.push_back(GsVec2((i + 1) / nfaces, 1.0f));
+		T.push_back(GsVec2(((i + 1) / nfaces) / 2.f, 0.5f));
 	}
+
+
+	P.push_back(GsVec(-25.f, -5.0f, -25.f));
+	N.push_back(GsVec(0, 1, 0));
+	T.push_back(GsVec2(0.5f, 0.0f));
+
+	P.push_back(GsVec(-25.f, -5.0f, 25.f));
+	N.push_back(GsVec(0, 1, 0));
+	T.push_back(GsVec2(0.5f, 1.0f));
+
+	P.push_back(GsVec(25.f, -5.0f, 25.f));
+	N.push_back(GsVec(0, 1, 0));
+	T.push_back(GsVec2(1.0f, 1.0f));
+
+	P.push_back(GsVec(25.f, -5.0f, -25.f));
+	N.push_back(GsVec(0, 1, 0));
+	T.push_back(GsVec2(1.0f, 0.0f));
+
+	P.push_back(GsVec(-25.f, -5.0f, -25.f));
+	N.push_back(GsVec(0, 1, 0));
+	T.push_back(GsVec2(0.5f, 0.0f));
+
+	P.push_back(GsVec(25.f, -5.0f, 25.f));
+	N.push_back(GsVec(0, 1, 0));
+	T.push_back(GsVec2(1.0f, 1.0f));
 
 	glBindVertexArray(va[1]);
 	glBindTexture(GL_TEXTURE_2D, texture[0]);

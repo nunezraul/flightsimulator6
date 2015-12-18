@@ -33,7 +33,7 @@ void SoTriangles::init (const char *file, GLuint *textures)
    _prog.uniform_location(9, "sh");
    _prog.uniform_location(10, "Tex1");
 
-   GsImage I;
+  /* GsImage I;
    if (!I.load(file))
 	   std::cout << "COULD NOT LOAD IMAGE!\n";
    else
@@ -50,7 +50,7 @@ void SoTriangles::init (const char *file, GLuint *textures)
    glGenerateMipmap(GL_TEXTURE_2D);
    glBindTexture(GL_TEXTURE_2D, 0);
    glBindVertexArray(0);
-   I.init(0, 0); // free image from CPU 
+   I.init(0, 0);*/ // free image from CPU 
    /*if (!I.load("../texture/sides.bmp"))
 	   std::cout << "COULD NOT LOAD IMAGE!\n";
    else
